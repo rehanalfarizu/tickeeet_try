@@ -1,1 +1,0 @@
-# tickeeet_try
