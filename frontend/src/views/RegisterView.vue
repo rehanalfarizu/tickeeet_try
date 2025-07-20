@@ -20,6 +20,29 @@
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-gradient-to-b from-purple-900/20 to-black/20 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/10">
           <form @submit.prevent="submitRegistration" class="space-y-8">
+            <!-- Event Selection (if eventId not in URL) -->
+            <div v-if="!selectedEventId">
+              <label for="event" class="block text-white font-semibold mb-2">Select Event</label>
+              <select
+                id="event"
+                v-model="form.event_id"
+                required
+                class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
+              >
+                <option value="" disabled>Choose an event</option>
+                <option v-for="event in events" :key="event.id" :value="event.id">
+                  {{ event.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Event Info (if eventId in URL) -->
+            <div v-else-if="selectedEvent" class="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4">
+              <h3 class="text-cyan-400 font-semibold mb-2">Registering for:</h3>
+              <p class="text-white text-lg">{{ selectedEvent.name }}</p>
+              <p class="text-gray-300 text-sm">{{ selectedEvent.location }} • {{ formatDate(selectedEvent.start_date) }}</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- First Name -->
               <div>
@@ -27,7 +50,7 @@
                 <input
                   type="text"
                   id="firstName"
-                  v-model="form.firstName"
+                  v-model="form.first_name"
                   required
                   class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
                   placeholder="Enter your first name"
@@ -40,12 +63,91 @@
                 <input
                   type="text"
                   id="lastName"
-                  v-model="form.lastName"
+                  v-model="form.last_name"
                   required
                   class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
                   placeholder="Enter your last name"
                 />
               </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-white font-semibold mb-2">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  v-model="form.email"
+                  required
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                  placeholder="your.email@example.com"
+                />
+              </div>
+
+              <!-- Phone -->
+              <div>
+                <label for="phone" class="block text-white font-semibold mb-2">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  v-model="form.phone"
+                  required
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                  placeholder="+62 812 3456 7890"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Institution -->
+              <div>
+                <label for="institution" class="block text-white font-semibold mb-2">Institution/Organization</label>
+                <input
+                  type="text"
+                  id="institution"
+                  v-model="form.institution"
+                  required
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                  placeholder="University, Company, etc."
+                />
+              </div>
+
+              <!-- Major/Field -->
+              <div>
+                <label for="major" class="block text-white font-semibold mb-2">Major/Field of Study</label>
+                <input
+                  type="text"
+                  id="major"
+                  v-model="form.major"
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                  placeholder="Computer Science, Business, etc."
+                />
+              </div>
+            </div>
+
+            <!-- Motivation -->
+            <div>
+              <label for="motivation" class="block text-white font-semibold mb-2">Why do you want to participate?</label>
+              <textarea
+                id="motivation"
+                v-model="form.motivation"
+                rows="4"
+                class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all resize-none"
+                placeholder="Share your motivation and goals for participating in this event..."
+              ></textarea>
+            </div>
+
+            <!-- Experience -->
+            <div>
+              <label for="experience" class="block text-white font-semibold mb-2">Previous Experience</label>
+              <textarea
+                id="experience"
+                v-model="form.experience"
+                rows="3"
+                class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all resize-none"
+                placeholder="Describe your relevant experience, projects, or achievements..."
+              ></textarea>
             </div>
 
             <!-- Email -->
@@ -264,15 +366,21 @@ export default {
   data() {
     return {
       form: {
-        firstName: '',
-        lastName: '',
+        event_id: '',
+        first_name: '',
+        last_name: '',
         email: '',
-        country: '',
+        phone: '',
+        institution: '',
+        major: '',
+        motivation: '',
         experience: '',
         skills: [],
-        teamPreference: '',
-        acceptTerms: false
+        preferences: []
       },
+      events: [],
+      selectedEvent: null,
+      selectedEventId: null,
       availableSkills: [
         'JavaScript', 'TypeScript', 'Rust', 'Python',
         'Solidity', 'React', 'Vue.js', 'Node.js',
@@ -280,32 +388,120 @@ export default {
         'UI/UX Design', 'Mobile Dev', 'DevOps', 'AI/ML'
       ],
       isSubmitting: false,
-      showSuccessModal: false
+      showSuccessModal: false,
+      error: null,
+      loading: true
     }
   },
+  async mounted() {
+    // Check if eventId is passed in query parameters
+    this.selectedEventId = this.$route.query.eventId
+
+    if (this.selectedEventId) {
+      this.form.event_id = this.selectedEventId
+      await this.fetchEventDetails(this.selectedEventId)
+    } else {
+      await this.fetchEvents()
+    }
+
+    this.loading = false
+  },
   methods: {
-    async submitRegistration() {
-      this.isSubmitting = true
+    async fetchEvents() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/events')
+        const data = await response.json()
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      console.log('Registration data:', this.form)
-
-      this.isSubmitting = false
-      this.showSuccessModal = true
-
-      // Reset form
-      this.form = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        country: '',
-        experience: '',
-        skills: [],
-        teamPreference: '',
-        acceptTerms: false
+        if (data.success) {
+          this.events = data.data.filter(event => event.is_active)
+        }
+      } catch (error) {
+        console.error('Error fetching events:', error)
+        this.error = 'Failed to load events'
       }
+    },
+
+    async fetchEventDetails(eventId) {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/events/${eventId}`)
+        const data = await response.json()
+
+        if (data.success) {
+          this.selectedEvent = data.data
+        }
+      } catch (error) {
+        console.error('Error fetching event details:', error)
+        this.error = 'Failed to load event details'
+      }
+    },
+
+    async submitRegistration() {
+      if (!this.form.event_id) {
+        this.error = 'Please select an event'
+        return
+      }
+
+      this.isSubmitting = true
+      this.error = null
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/registrations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(this.form)
+        })
+
+        // Check if response has content before parsing JSON
+        const responseText = await response.text()
+        let data = {}
+
+        if (responseText) {
+          try {
+            data = JSON.parse(responseText)
+          } catch (parseError) {
+            console.error('JSON parse error:', parseError)
+            throw new Error('Invalid response from server')
+          }
+        }
+
+        if (response.ok && data.success) {
+          this.showSuccessModal = true
+
+          // Reset form
+          this.form = {
+            event_id: this.selectedEventId || '',
+            first_name: '',
+            last_name: '',
+            email: '',
+            phone: '',
+            institution: '',
+            major: '',
+            motivation: '',
+            experience: '',
+            skills: [],
+            preferences: []
+          }
+        } else {
+          throw new Error(data.message || `Server error: ${response.status}`)
+        }
+      } catch (error) {
+        console.error('Registration error:', error)
+        this.error = error.message || 'Registration failed. Please try again.'
+      } finally {
+        this.isSubmitting = false
+      }
+    },
+
+    formatDate(dateString) {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      })
     }
   }
 }
