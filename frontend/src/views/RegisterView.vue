@@ -4,10 +4,10 @@
     <section class="py-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center space-y-8">
-          <h1 class="text-5xl md:text-7xl font-bold text-white fade-in-up">
+          <h1 class="text-5xl md:text-7xl font-bold text-white">
             <span class="text-gradient">Register</span> Now
           </h1>
-          <p class="text-xl text-gray-300 max-w-4xl mx-auto fade-in-up stagger-1">
+          <p class="text-xl text-gray-300 max-w-4xl mx-auto">
             Join thousands of developers in the biggest blockchain hackathon of the year.
             Registration is free and takes less than 5 minutes.
           </p>
@@ -18,31 +18,31 @@
     <!-- Registration Form -->
     <section class="py-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-gradient-to-b from-purple-900/20 to-black/20 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/10 fade-in-up stagger-2 card-hover">
+        <div class="bg-gradient-to-b from-purple-900/20 to-black/20 backdrop-blur-md rounded-2xl p-8 md:p-12 border border-white/10">
           <form @submit.prevent="submitRegistration" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- First Name -->
-              <div class="fade-in-up stagger-3">
+              <div>
                 <label for="firstName" class="block text-white font-semibold mb-2">First Name</label>
                 <input
                   type="text"
                   id="firstName"
                   v-model="form.firstName"
                   required
-                  class="form-input w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 hover:border-cyan-300/40"
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
                   placeholder="Enter your first name"
                 />
               </div>
 
               <!-- Last Name -->
-              <div class="fade-in-up stagger-4">
+              <div>
                 <label for="lastName" class="block text-white font-semibold mb-2">Last Name</label>
                 <input
                   type="text"
                   id="lastName"
                   v-model="form.lastName"
                   required
-                  class="form-input w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 hover:border-cyan-300/40"
+                  class="w-full px-4 py-3 bg-black/30 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/20 transition-all"
                   placeholder="Enter your last name"
                 />
               </div>
@@ -307,59 +307,6 @@ export default {
         acceptTerms: false
       }
     }
-  },
-  mounted() {
-    this.initAnimations()
-  },
-  methods: {
-    async submitRegistration() {
-      this.isSubmitting = true
-
-      // Add loading animation
-      const submitBtn = document.querySelector('button[type="submit"]')
-      submitBtn.classList.add('animate-pulse')
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      console.log('Registration data:', this.form)
-
-      submitBtn.classList.remove('animate-pulse')
-      this.isSubmitting = false
-      this.showSuccessModal = true
-
-      // Reset form
-      this.form = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        country: '',
-        experience: '',
-        skills: [],
-        teamPreference: '',
-        acceptTerms: false
-      }
-    },
-    initAnimations() {
-      // Intersection Observer for animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      }
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate-visible')
-          }
-        })
-      }, observerOptions)
-
-      // Observe all elements with fade-in-up class
-      document.querySelectorAll('.fade-in-up').forEach(el => {
-        observer.observe(el)
-      })
-    }
   }
 }
 </script>
@@ -367,60 +314,5 @@ export default {
 <style scoped>
 input[type="checkbox"], input[type="radio"] {
   accent-color: #06b6d4;
-}
-
-.form-input {
-  transition: all 0.3s ease;
-}
-
-.form-input:focus {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(6, 182, 212, 0.1);
-}
-
-.animate-visible {
-  animation-play-state: running;
-}
-
-.fade-in-up {
-  animation-play-state: paused;
-}
-
-/* Skill checkbox animations */
-.skill-checkbox {
-  transition: all 0.3s ease;
-}
-
-.skill-checkbox:hover {
-  transform: scale(1.05);
-}
-
-/* Success modal animation */
-.modal-enter-active {
-  animation: modalEnter 0.3s ease-out;
-}
-
-.modal-leave-active {
-  animation: modalEnter 0.3s ease-in reverse;
-}
-
-@keyframes modalEnter {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* Custom radio and checkbox styles */
-input[type="radio"], input[type="checkbox"] {
-  transition: all 0.2s ease;
-}
-
-input[type="radio"]:checked, input[type="checkbox"]:checked {
-  transform: scale(1.1);
 }
 </style>
